@@ -6,6 +6,8 @@
 #include <ifaddrs.h>
 #include <string.h>
 #include <ctype.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 #define NARGS 3
 #define MAXIFACELEN 15
@@ -50,7 +52,8 @@ eth_addr_isok(char *eth)
 	int ok, i;
 
 	ok = 1;
-
+	if(strncmp(eth, "random", strlen("random")) == 0)
+		return 1;
 	if(strlen(eth) != MACLEN)
 		ok = 0;
 	if(ok){
@@ -88,17 +91,68 @@ args_ok(int nargs, char *args[])
 }
 
 void
+wait_for_child(int child_pid)
+{
+	int status;
+	if(waitpid(child_pid, &status, 0) < 0)
+		errx(EXIT_FAILURE, "%s\n", "[ERROR] Waitpid Failed!");
+
+	if(WEXITSTATUS(status) != 0)
+		fprintf(stderr, "%s\n", "[WARN] Child not finished well");
+
+}
+
+void
+exec_macchanger(char *iface, char *eth)
+{
+	char *args[5];
+
+	args[0] = "macchanger";
+	if(strncmp(eth, "random", strlen("random")) == 0){
+		args[1] = "-r";
+		args[2] = iface;
+		args[3] = NULL;
+	}else{
+		args[1] = "-m";
+		args[2] = eth;
+		args[3] = iface;
+		args[4] = NULL;
+	}
+	execvp("macchanger", args);
+}
+
+void
 change_mac(char *iface, char *eth)
 {
-	/*
-	 *HAS TO BE FINISHED!
-	 */
-	;
+	int pid;
+	
+	pid = fork();
+	switch(pid){
+		case -1:
+			errx(EXIT_FAILURE, "%s\n", "[ERROR]Fork Failed!");
+		case 0:
+			exec_macchanger(iface, eth);
+		default:
+			wait_for_child(pid);
+	}
+}
+
+void
+show_help()
+{
+	printf("%s\n", "macchanger [-h] device new_mac");
 }
 
 int
 main(int argc, char *argv[])
 {
+	if(geteuid() != 0)
+		errx(EXIT_FAILURE, "%s\n", "[ERROR] Make sudo!");
+
+	if(strncmp(argv[1], "-h", strlen("-h")) == 0){
+		show_help();
+		exit(EXIT_SUCCESS);
+	}
 
 	if(! args_ok(argc, argv))
 		errx(EXIT_FAILURE, "%s\n", "[ERROR] Usage Error");
