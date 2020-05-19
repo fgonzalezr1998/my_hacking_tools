@@ -19,7 +19,7 @@ char_hexa(char c)
 	int pos = c;
 
 	return (pos >= '0' && pos <= '9') || (pos >= 'A' && pos <= 'F') ||
-												(pos >= 'a' && pos <= 'f');
+			(pos >= 'a' && pos <= 'f');
 }
 
 int
@@ -42,6 +42,7 @@ iface_isok(char *iface)
 	}
 
 	freeifaddrs(ifaddr);
+	//POR LA SALIDA DE ERRORES!
 	printf("%s\n", "Network Interface Doesn't Exist!");
 	return 0;
 }
@@ -125,7 +126,7 @@ void
 change_mac(char *iface, char *eth)
 {
 	int pid;
-	
+
 	pid = fork();
 	switch(pid){
 		case -1:
