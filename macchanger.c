@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-#define NARGS 3
+#define MINARGS 2
 #define MAXIFACELEN 15
 #define MACLEN 17
 
@@ -83,10 +83,10 @@ int
 args_ok(int nargs, char *args[])
 {
 
-	if(nargs != NARGS)
+	if(nargs != MINARGS + 1)
 		return 0;
 
-	return iface_isok(args[NARGS - 2]) && eth_addr_isok(args[NARGS - 1]);
+	return iface_isok(args[MINARGS - 1]) && eth_addr_isok(args[MINARGS]);
 
 }
 
@@ -146,6 +146,8 @@ show_help()
 int
 main(int argc, char *argv[])
 {
+	if(argc < MINARGS)
+		errx(EXIT_FAILURE, "%s\n", "[ERROR] Usage Error");
 	if(geteuid() != 0)
 		errx(EXIT_FAILURE, "%s\n", "[ERROR] Make sudo!");
 
@@ -157,7 +159,7 @@ main(int argc, char *argv[])
 	if(! args_ok(argc, argv))
 		errx(EXIT_FAILURE, "%s\n", "[ERROR] Usage Error");
 
-	change_mac(argv[NARGS - 2], argv[NARGS - 1]);
+	change_mac(argv[MINARGS - 1], argv[MINARGS]);
 
 	exit(EXIT_SUCCESS);
 }
