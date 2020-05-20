@@ -42,8 +42,8 @@ iface_isok(char *iface)
 	}
 
 	freeifaddrs(ifaddr);
-	//POR LA SALIDA DE ERRORES!
-	printf("%s\n", "Network Interface Doesn't Exist!");
+	
+	fprintf(etderr, "%s\n", "Network Interface Doesn't Exist!");
 	return 0;
 }
 
@@ -75,7 +75,7 @@ eth_addr_isok(char *eth)
 	}
 
 	if(! ok)
-		printf("%s\n", "MAC Address Invalid!");
+		fprintf(stderr, "%s\n", "MAC Address Invalid!");
 
 	return ok;
 }
