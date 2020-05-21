@@ -8,10 +8,15 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+#include "includes/random_mac_generator.h"
 
 #define MINARGS 2
 #define MAXIFACELEN 15
-#define MACLEN 17
+
+void change_mac(char *iface, char *eth);
 
 int
 char_hexa(char c)
@@ -42,8 +47,8 @@ iface_isok(char *iface)
 	}
 
 	freeifaddrs(ifaddr);
-	
-	fprintf(etderr, "%s\n", "Network Interface Doesn't Exist!");
+
+	fprintf(stderr, "%s\n", "Network Interface Doesn't Exist!");
 	return 0;
 }
 
@@ -92,49 +97,57 @@ args_ok(int nargs, char *args[])
 }
 
 void
-wait_for_child(int child_pid)
+exec_macchanger(char *iface, char *eth)
+{
+	char *args[6];
+
+	args[0] = "ifconfig";
+	args[1] = iface;
+	args[2] = "hw";
+	args[3] = "ether";
+	if(strncmp(eth, "random", strlen("random")) == 0)
+		mk_mac(eth, MACLEN);
+
+	args[4] = eth;
+	args[5] = NULL;
+
+	execvp("ifconfig", args);
+}
+
+void
+wait_for_child(int child_pid, char *iface, char *eth)
 {
 	int status;
 	if(waitpid(child_pid, &status, 0) < 0)
 		errx(EXIT_FAILURE, "%s\n", "[ERROR] Waitpid Failed!");
 
-	if(WEXITSTATUS(status) != 0)
-		fprintf(stderr, "%s\n", "[WARN] Child not finished well");
+	if(WEXITSTATUS(status) == 0)
+		fprintf(stdout, "%s\n", "[INFO] MAC CHANGED SUCCESFULLY");
+	else if(WEXITSTATUS(status) != -2)
+		change_mac(iface, eth);
 
-}
-
-void
-exec_macchanger(char *iface, char *eth)
-{
-	char *args[5];
-
-	args[0] = "macchanger";
-	if(strncmp(eth, "random", strlen("random")) == 0){
-		args[1] = "-r";
-		args[2] = iface;
-		args[3] = NULL;
-	}else{
-		args[1] = "-m";
-		args[2] = eth;
-		args[3] = iface;
-		args[4] = NULL;
-	}
-	execvp("macchanger", args);
 }
 
 void
 change_mac(char *iface, char *eth)
 {
-	int pid;
+	int pid, fd;
 
 	pid = fork();
 	switch(pid){
 		case -1:
 			errx(EXIT_FAILURE, "%s\n", "[ERROR]Fork Failed!");
 		case 0:
+			fd = open("/dev/null", O_WRONLY);
+			if(fd < 0){
+				fprintf(stderr, "%s\n", "[ERROR] Can't open file for dup stderr");
+				exit(-2);
+			}
+			dup2(fd, fileno(stderr));
+			close(fd);
 			exec_macchanger(iface, eth);
 		default:
-			wait_for_child(pid);
+			wait_for_child(pid, iface, eth);
 	}
 }
 
@@ -142,6 +155,7 @@ void
 show_help()
 {
 	printf("%s\n", "macchanger [-h] device new_mac");
+	printf("%s\n", "new_mac maybe 'random' for choosing random mac address");
 }
 
 int
