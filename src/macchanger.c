@@ -11,7 +11,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include "includes/random_mac_generator.h"
+#include "../lib/my_hacking_lib.h"
 
 #define MINARGS 2
 #define MAXIFACELEN 15

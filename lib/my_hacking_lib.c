@@ -1,4 +1,4 @@
-#include "random_mac_generator.h"
+#include "my_hacking_lib.h"
 
 char
 random_hexchar(int *seed)

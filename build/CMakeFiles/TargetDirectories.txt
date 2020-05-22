@@ -1,0 +1,4 @@
+/home/fernando/Github-Repos/my_hacking_tools/build/CMakeFiles/rebuild_cache.dir
+/home/fernando/Github-Repos/my_hacking_tools/build/CMakeFiles/edit_cache.dir
+/home/fernando/Github-Repos/my_hacking_tools/build/CMakeFiles/my_hacking_lib.dir
+/home/fernando/Github-Repos/my_hacking_tools/build/CMakeFiles/macchanger.dir

@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/fernando/Github-Repos/my_hacking_tools/lib/my_hacking_lib.c
+my_hacking_lib.h
+/home/fernando/Github-Repos/my_hacking_tools/lib/my_hacking_lib.h
+
+/home/fernando/Github-Repos/my_hacking_tools/lib/my_hacking_lib.h
+stdio.h
+-
+stdlib.h
+-
+sys/types.h
+-
+unistd.h
+-
+err.h
+-
+
