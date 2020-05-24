@@ -6,4 +6,6 @@
 
 #define MACLEN 17
 
+typedef struct WordsChangedType WordsChangedType;
+
 void mk_mac(char *mac, int mac_len);

@@ -1,5 +1,13 @@
 #include "my_hacking_lib.h"
 
+struct WordsChangedType{
+	char *word;
+	WordsChangedType *next;
+};
+
+
+//PRIVATE FUNCTIONS
+
 char
 random_hexchar(int *seed)
 {
@@ -21,6 +29,8 @@ random_hexchar(int *seed)
 
     return random_int;
 }
+
+//PUBLIC FUNCTIONS
 
 void
 mk_mac(char *mac, int mac_len)
