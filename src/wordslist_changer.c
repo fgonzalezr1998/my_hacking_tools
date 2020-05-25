@@ -3,14 +3,15 @@
 #include <err.h>
 #include <string.h>
 #include <unistd.h>
-#include "../lib/my_hacking_lib.h"
+#include "my_hacking_lib.h"
 
 #define MINARGS 2
+#define MAXLENWORDS 64
 
 int
 args_ok(int nargs)
 {
-	return nargs == MINARGS;
+	return nargs >= MINARGS;
 }
 
 int
@@ -37,12 +38,26 @@ void
 change_wordslist(char *wordslist_file)
 {
 	WordsChangedType *words_changed_list;
-	
+	FILE *fd;
+	char buffer[MAXLENWORDS];
+
 	if(! file_ok(wordslist_file))
 		errx(EXIT_FAILURE, "%s\n", "[ERROR] wordslist file is not correct!");
 
 
 	//read file and change words one by one and print it by stdout
+	fd = fopen(wordslist_file, "r");
+
+	while(fgets(buffer, MAXLENWORDS, fd) != NULL){
+		if(buffer[0] == '\n')
+			continue;
+		buffer[strlen(buffer) - 1] = '\0';
+		//here ir the complete word and nothing else than the word
+		printf("%s\n", buffer);
+		printf("----\n");
+	}
+
+	fclose(fd);
 }
 
 int

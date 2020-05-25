@@ -10,3 +10,6 @@ add_library(my_hacking_lib STATIC lib/my_hacking_lib)
 
 add_executable(macchanger src/macchanger)
 target_link_libraries(macchanger my_hacking_lib)
+
+add_executable(wordslist_changer src/wordslist_changer)
+target_link_libraries(wordslist_changer my_hacking_lib)
