@@ -52,7 +52,7 @@ change_wordslist(char *wordslist_file)
 		if(buffer[0] == '\n')
 			continue;
 		buffer[strlen(buffer) - 1] = '\0';
-		//here ir the complete word and nothing else than the word
+		//here is the complete word and nothing else than the word
 		printf("%s\n", buffer);
 		printf("----\n");
 	}
